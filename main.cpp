@@ -29,24 +29,20 @@ bool compareByDepth(const depthPlane& a, const depthPlane& b)
 }
 
 void main() {
-	/*
-	Mat ref = imread("./refImage.png");
-	Mat mask = imread("./depth.png", IMREAD_GRAYSCALE);
-	Mat dst;
-	cv::inpaint(ref, mask, dst, 1, INPAINT_NS);
-	imshow("result", dst);
-	waitKey(0);
-	*/
-
 	int baseline = 50;
 	int cameraDistance = 500;
-	Mat depth = imread("./depth.png");
-	Mat ref = imread("./refImage.png");
-
+	Mat depth = imread("./Vintage_depth.png", IMREAD_GRAYSCALE);
+	Mat ref = imread("./Vintage.png");
+	for (int width = 0; width < depth.cols; width++) {
+		for (int height = 0; height < depth.rows; height++) {
+			depth.at<uchar>(height, width) = 255 - depth.at<uchar>(height, width);
+		}
+	}
+	imshow("depth", depth);
 	vector<depthPlane> disparityArray;
 	for (int width = 0; width < depth.cols; width++) {
 		for (int height = 0; height < depth.rows; height++) {
-			int Z = depth.at<Vec3b>(height, width)[0];
+			int Z = depth.at<uchar>(height, width);
 			bool ifDisExists = false;
 			for (int i = 0; i < disparityArray.size(); i++) {
 				if (Z == disparityArray[i].depth) {
@@ -68,11 +64,18 @@ void main() {
 		int syntheticSize = baseline * (disparityArray[i].depth - disparityArray[disparityArray.size()-1].depth) / cameraDistance;
 		for (int width = 0; width < depth.cols; width++) {
 			for (int height = 0; height < depth.rows; height++) {
-				if (depth.at<Vec3b>(height, width)[0] == disparityArray[i].depth) {
+				if (depth.at<uchar>(height, width) == disparityArray[i].depth) {
 					MPI.at<Vec4b>(height, width) = Vec4b(ref.at<Vec3b>(height, width)[0], ref.at<Vec3b>(height, width)[1], ref.at<Vec3b>(height, width)[2],255);
-				}
-				else if (depth.at<Vec3b>(height, width)[0] > disparityArray[i].depth) {
-					MPI.at<Vec4b>(height, width) = Vec4b(255,255,255,255);
+					
+					for (int xOffset = -syntheticSize+1; xOffset < syntheticSize; xOffset++) {
+						for (int yOffset = -syntheticSize + 1; yOffset < syntheticSize; yOffset++) {
+							if (height + yOffset < depth.rows && height + yOffset > 0 && width + xOffset < depth.cols && width + xOffset>0) {
+								if (depth.at<uchar>(height + yOffset, width+xOffset) < disparityArray[i].depth) {
+									MPI.at<Vec4b>(height + yOffset, width + xOffset) = Vec4b(255, 255, 255, 255);
+								}
+							}
+						}
+					}
 				}
 			}
 		}
@@ -80,4 +83,5 @@ void main() {
 		oss << "MPI/" << disparityArray[i].depth << ".png";
 		imwrite(oss.str(), MPI);
 	}
+	waitKey(0);
 }

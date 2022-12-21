@@ -1,3 +1,3 @@
 ﻿  main.cpp
-D:\C++ Projects\MPI_inpaint\main.cpp(31,13): warning C4326: return type of 'main' should be 'int' instead of 'void'
-  MPI_Inpaint.vcxproj -> D:\C++ Projects\MPI_inpaint\x64\Debug\MPI_Inpaint.exe
+D:\Vs2022\MPI_Inpaint\main.cpp(31,13): warning C4326: return type of 'main' should be 'int' instead of 'void'
+  MPI_Inpaint.vcxproj -> D:\Vs2022\MPI_Inpaint\x64\Debug\MPI_Inpaint.exe

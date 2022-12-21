@@ -1,1 +1,2 @@
 D:\C++ Projects\MPI_inpaint\x64\Debug\MPI_Inpaint.exe
+D:\Vs2022\MPI_Inpaint\x64\Debug\MPI_Inpaint.exe
